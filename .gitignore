@@ -17,8 +17,11 @@ __pycache__/
 # macOS
 .DS_Store
 
+# Raw data
+data/raw/*.csv
+
 # Processed data
-data/processed/
+data/processed/*.csv
 
 # Models
 models/
