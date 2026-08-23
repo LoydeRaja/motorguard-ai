@@ -1,230 +1,114 @@
-# MotorGuard-AI
+# MotorGuard AI
 
-## Vehicle Insurance Churn Prediction
+MotorGuard AI is a machine learning project for predicting churn in auto insurance customers using structured customer, policy, and demographic data.
 
-MotorGuard-AI is an end-to-end machine-learning project that predicts whether an auto-insurance customer is likely to **churn**.
+## Project goal
 
-The project uses the original `autoinsurance_churn.csv` dataset and treats `Churn` as the binary classification target.
+The goal of this project is to predict whether an auto insurance customer is likely to churn, and to provide a reproducible training and inference pipeline that can be extended into a retention analytics workflow.
 
-### Dataset
+## Dataset
 
-The supplied dataset contains **1,680,909 rows and 22 columns**. The target distribution is:
+This project uses the Kaggle *Auto Insurance Churn Analysis Dataset* and assumes the merged file is available at:
 
-- No churn: 1,487,453
-- Churn: 193,456
-- Churn rate: ~11.5%
+```text
+data/raw/autoinsurance_churn.csv
+```
 
-The following fields are intentionally excluded from the model:
-- `individual_id` / `address_id`: identifiers
-- `date_of_birth`: redundant with age
-- `cust_orig_date`: redundant with tenure
-- `acct_suspd_date`: potentially post-outcome information and therefore leakage risk
-- `state`: constant in the supplied data (`TX`)
+### Target
 
-### Model features
+- `Churn` is used as the target variable.
+- `acct_suspd_date` is excluded from model features to avoid leakage.
+
+## Features used in the MVP
+
+### Numeric features
 
 - `curr_ann_amt`
 - `days_tenure`
 - `age_in_years`
 - `latitude`
 - `longitude`
-- `city`
-- `county`
 - `income`
 - `has_children`
 - `length_of_residence`
-- `marital_status`
-- `home_market_value`
 - `home_owner`
 - `college_degree`
 - `good_credit`
 
-### ML pipeline
+### Categorical features
+
+- `city`
+- `state`
+- `county`
+- `marital_status`
+- `home_market_value`
+
+## Excluded columns
+
+- `individual_id`
+- `address_id`
+- `date_of_birth`
+- `cust_orig_date`
+- `acct_suspd_date`
+
+## Project structure
 
 ```text
-autoinsurance_churn.csv
-        |
-        v
-Data validation + cleaning
-        |
-        v
-Train / validation / test split
-        |
-        v
-Preprocessing
-  ├── numeric imputation
-  └── categorical imputation + encoding
-        |
-        +---- Logistic Regression
-        |
-        +---- HistGradientBoosting
-        |
-        +---- XGBoost
-        |
-        v
-Cross-validation + test evaluation
-        |
-        +---- MLflow experiment tracking
-        |
-        v
-Best model
-        |
-        v
-FastAPI /predict
-        |
-        v
-Docker
+motorguard-ai/
+├── data/
+│   ├── raw/
+│   └── processed/
+├── docs/
+├── models/
+├── notebooks/
+├── reports/
+├── src/
+│   └── motorguard_ai/
+├── tests/
+├── pyproject.toml
+├── requirements.txt
+└── README.md
 ```
 
-### Setup
+## Setup
 
-Use a Python 3.12 virtual environment on Windows:
+Create and activate a virtual environment, then install dependencies:
 
-```powershell
+```bash
 python -m venv .venv
-.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
+.venv\\Scripts\\activate
 pip install -r requirements.txt
 ```
 
-Put the dataset here:
+## Training
 
-```text
-data/raw/autoinsurance_churn.csv
+Run the training script:
+
+```bash
+python -m src.motorguard_ai.train
 ```
 
-Then run:
+The script will:
 
-```powershell
-python -m src.train
+- load the churn dataset
+- split train and test data
+- build a preprocessing pipeline
+- train logistic regression and random forest models
+- evaluate both models
+- save the best model to `models/best_model.joblib`
+- save metrics to `reports/model_metrics.json`
+
+## Prediction
+
+To score a new CSV file:
+
+```bash
+python -m src.motorguard_ai.predict --input path/to/new_data.csv --output reports/predictions.csv
 ```
 
-The script creates:
+## Suggested next improvements
 
-```text
-models/churn_model.joblib
-models/metrics.json
-```
-
-### API
-
-After training:
-
-```powershell
-uvicorn src.api:app --reload
-```
-
-Open:
-
-```text
-http://127.0.0.1:8000/docs
-```
-
-Health check:
-
-```text
-GET /health
-```
-
-Prediction:
-
-```text
-POST /predict
-```
-
-Example request:
-
-```json
-{
-  "curr_ann_amt": 818.88,
-  "days_tenure": 1454,
-  "age_in_years": 44,
-  "latitude": 32.578829,
-  "longitude": -96.305006,
-  "city": "Kaufman",
-  "county": "Kaufman",
-  "income": 22500,
-  "has_children": true,
-  "length_of_residence": 15,
-  "marital_status": "Married",
-  "home_market_value": "50000 - 74999",
-  "home_owner": true,
-  "college_degree": true,
-  "good_credit": true
-}
-```
-
-### MLflow
-
-Run:
-
-```powershell
-mlflow ui
-```
-
-Then open:
-
-```text
-http://127.0.0.1:5000
-```
-
-The training script logs model metrics and parameters to MLflow.
-
-### Evaluation
-
-Because the target is imbalanced, the project reports:
-
-- ROC-AUC
-- PR-AUC / Average Precision
-- F1
-- Precision
-- Recall
-- Accuracy
-- Confusion Matrix
-
-For churn detection, **ROC-AUC and especially PR-AUC/Recall should be considered alongside accuracy**.
-
-### Docker
-
-After a model has been trained:
-
-```powershell
-docker compose up --build
-```
-
-The API is available at:
-
-```text
-http://127.0.0.1:8000
-```
-
-### Tests
-
-```powershell
-pytest -q
-```
-
-### GitHub Actions
-
-Every push and pull request to `main` runs the test suite automatically.
-
-### Important modeling note
-
-`acct_suspd_date` is not used as a feature because it can contain information that only becomes available after or around the churn event. Using it could produce data leakage and unrealistic model performance.
-
-This is an educational portfolio project. It is not an insurance underwriting or pricing system.
-
-
-### Windows troubleshooting
-
-If you are already inside the `motorguard-ai-classification` directory, do **not**
-run `cd motorguard-ai` again. Start directly with:
-
-```powershell
-.venv\Scripts\Activate.ps1
-python -m src.train
-```
-
-The training pipeline converts missing categorical values to `None` before
-scikit-learn preprocessing to avoid the `TypeError: boolean value of NA is ambiguous`
-error with pandas `StringDtype`.
+- add hyperparameter tuning
+- add SHAP-based explainability
+- compare with XGBoost or LightGBM
+- build a retention dashboard or API

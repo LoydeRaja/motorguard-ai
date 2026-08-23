@@ -1,25 +1,39 @@
 import pandas as pd
-from src.data import clean_data
 
-def test_clean_data_keeps_binary_target():
-    df = pd.DataFrame({
-        "curr_ann_amt": [100, 200, 300],
-        "days_tenure": [10, 20, 30],
-        "age_in_years": [30, 40, 50],
-        "latitude": [1, None, 3],
-        "longitude": [2, 3, None],
-        "city": ["A", "B", None],
-        "county": ["C1", "C2", "C3"],
-        "income": [50000, 60000, 70000],
-        "has_children": [0, 1, 0],
-        "length_of_residence": [2, 5, 7],
-        "marital_status": ["Single", "Married", "Single"],
-        "home_market_value": ["50000 - 74999"] * 3,
-        "home_owner": [1, 0, 1],
-        "college_degree": [1, 1, 0],
-        "good_credit": [1, 0, 1],
-        "Churn": [0, 1, 0],
-    })
-    result = clean_data(df)
-    assert len(result) == 3
-    assert set(result["Churn"]) == {0, 1}
+from src.motorguard_ai.data import prepare_training_data
+
+
+def test_prepare_training_data_returns_expected_shapes():
+    df = pd.DataFrame(
+        {
+            "individual_id": [1, 2],
+            "address_id": [11, 12],
+            "curr_ann_amt": [100.0, 200.0],
+            "days_tenure": [10.0, 20.0],
+            "cust_orig_date": ["2020-01-01", "2021-01-01"],
+            "age_in_years": [30, 40],
+            "date_of_birth": ["1990-01-01", "1980-01-01"],
+            "latitude": [32.7, 32.8],
+            "longitude": [-96.8, -96.9],
+            "city": ["Dallas", "Plano"],
+            "state": ["TX", "TX"],
+            "county": ["Dallas", "Collin"],
+            "income": [50000.0, 70000.0],
+            "has_children": [1.0, 0.0],
+            "length_of_residence": [5.0, 10.0],
+            "marital_status": ["Married", "Single"],
+            "home_market_value": ["50000 - 74999", "75000 - 99999"],
+            "home_owner": [1.0, 1.0],
+            "college_degree": [1.0, 0.0],
+            "good_credit": [1.0, 0.0],
+            "acct_suspd_date": [None, "2022-01-01"],
+            "Churn": [0, 1],
+        }
+    )
+
+    X, y = prepare_training_data(df)
+
+    assert X.shape == (2, 16)
+    assert y.shape == (2,)
+    assert "Churn" not in X.columns
+    assert "acct_suspd_date" not in X.columns

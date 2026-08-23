@@ -1,18 +1,33 @@
+# Python
 __pycache__/
 *.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
 .venv/
 venv/
-.env
-.pytest_cache/
+
+# Jupyter
 .ipynb_checkpoints/
-data/raw/*.csv
-data/processed/*
-!data/raw/.gitkeep
-!data/processed/.gitkeep
-models/*
-!models/.gitkeep
-mlruns/
-*.egg-info/
-.DS_Store
-.idea/
+
+# VS Code
 .vscode/
+
+# Environment
+.env
+
+# macOS
+.DS_Store
+
+# Raw data
+data/raw/*.csv
+
+# Processed data
+data/processed/*.csv
+
+# Models and reports
+models/
+reports/predictions.csv
+reports/model_metrics.json
+
+mlflow.db
