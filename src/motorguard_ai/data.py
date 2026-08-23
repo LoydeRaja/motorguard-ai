@@ -8,8 +8,7 @@ from .config import DATA_PATH, DROP_COLUMNS, FEATURE_COLUMNS, TARGET_COLUMN
 
 
 def load_dataset(path=DATA_PATH) -> pd.DataFrame:
-    df = pd.read_csv(path)
-    return df
+    return pd.read_csv(path)
 
 
 def prepare_training_data(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series]:
@@ -28,5 +27,4 @@ def prepare_training_data(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series]:
 
     X = working[FEATURE_COLUMNS].copy()
     y = working[TARGET_COLUMN].astype(int).copy()
-
     return X, y
