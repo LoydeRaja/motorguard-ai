@@ -1,9 +1,11 @@
-# Virtual Environment
-.venv/
-
 # Python
 __pycache__/
 *.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
+venv/
 
 # Jupyter
 .ipynb_checkpoints/
@@ -23,5 +25,7 @@ data/raw/*.csv
 # Processed data
 data/processed/*.csv
 
-# Models
+# Models and reports
 models/
+reports/predictions.csv
+reports/model_metrics.json
