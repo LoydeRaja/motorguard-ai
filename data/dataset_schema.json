@@ -1,0 +1,16 @@
+{
+  "dataset_filename": "autoinsurance_churn.csv",
+  "rows": 1680909,
+  "columns": 22,
+  "target": "Churn",
+  "churn_rate": 0.11509010898269924,
+  "excluded_columns": [
+    "individual_id",
+    "address_id",
+    "cust_orig_date",
+    "date_of_birth",
+    "acct_suspd_date",
+    "state"
+  ],
+  "model_features": "from pathlib import Path\n\nROOT_DIR = Path(__file__).resolve().parents[1]\nDATA_DIR = ROOT_DIR / \"data\"\nRAW_DATA = DATA_DIR / \"raw\" / \"autoinsurance_churn.csv\"\nMODEL_DIR = ROOT_DIR / \"models\"\nMODEL_PATH = MODEL_DIR / \"churn_model.joblib\"\nMETRICS_PATH = MODEL_DIR / \"metrics.json\"\n\nTARGET = \"Churn\"\n\nFEATURES = [\n    \"curr_ann_amt\",\n    \"days_tenure\",\n    \"age_in_years\",\n    \"latitude\",\n    \"longitude\",\n    \"city\",\n    \"county\",\n    \"income\",\n    \"has_children\",\n    \"length_of_residence\",\n    \"marital_status\",\n    \"home_market_value\",\n    \"home_owner\",\n    \"college_degree\",\n    \"good_credit\",\n]\n\nNUMERIC_FEATURES = [\n    \"curr_ann_amt\",\n    \"days_tenure\",\n    \"age_in_years\",\n    \"latitude\",\n    \"longitude\",\n    \"income\",\n    \"has_children\",\n    \"length_of_residence\",\n    \"home_owner\",\n    \"college_degree\",\n    \"good_credit\",\n]\n\nCATEGORICAL_FEATURES = [\n    \"city\",\n    \"county\",\n    \"marital_status\",\n    \"home_market_value\",\n]\n"
+}
