@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "motorguard-ai"
+version = "0.1.0"
+description = "Churn prediction for auto insurance customers"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+  { name = "Loydeclinton Rajavasthagar" }
+]
+dependencies = [
+  "pandas>=2.2.0",
+  "numpy>=1.26.0",
+  "scikit-learn>=1.5.0",
+  "joblib>=1.4.0"
+]
+
+[tool.setuptools]
+package-dir = {"" = "."}
+
+[tool.setuptools.packages.find]
+where = ["src"]
